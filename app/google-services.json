@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "629673400884",
+    "project_id": "saveme-caf45",
+    "storage_bucket": "saveme-caf45.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629673400884:android:d7bdbc4aaa56484c528861",
+        "android_client_info": {
+          "package_name": "com.mobile.saveme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLSs11Ss3q7cJnL3H27S6mSTIBRy2bHds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
