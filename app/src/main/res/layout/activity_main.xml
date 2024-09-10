@@ -8,22 +8,52 @@
     android:background="@android:color/holo_red_light"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/maintext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Main Page"
-        android:textColor="@android:color/white"
-        android:textSize="36sp"
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/round_button_background"
+        android:text="Start"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvTapToStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="200dp"
-        android:layout_marginBottom="16dp"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintVertical_bias="0.5"/>
 
+    <!-- Text Under the Button -->
+    <TextView
+        android:id="@+id/tvStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/btnStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Tap to Start Text -->
+    <TextView
+        android:id="@+id/tvTapToStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+
+        android:text="Tap for urgent help. Activate SOS now. Your safety matters.Immediate assistance at your fingertips."
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStart" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
