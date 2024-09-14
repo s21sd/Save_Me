@@ -1,12 +1,15 @@
 package com.mobile.saveme;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -20,7 +23,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btnStart;
+    private Button btnStart ,saidbtn;
+    private TextView saidtext;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
 
@@ -33,10 +37,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnStart = findViewById(R.id.btnStart);
+        saidbtn=findViewById(R.id.saidbtn);
+        saidtext=findViewById(R.id.saidtext);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Request permissions
         requestPermissions();
+
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +78,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public  void speak(View view){
+        Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Start Speaking");
+        startActivityForResult(intent,100);
+    }
+
+    protected void onActivityResult(int requestCode,int resultCode, @NonNull Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+
+        if(requestCode==100 && resultCode ==RESULT_OK){
+            saidtext.setText(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
+        }
+    }
+
+
     private void getLastKnownLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -85,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Send SMS with location coordinates
                                 SmsManager smsManager = SmsManager.getDefault();
-                                String message = "Hello, Sunny This Side. My location is: " + latitude + ", " + longitude;
+                                String message = "lat: " + latitude + ", "+"log: " + longitude;
                                 smsManager.sendTextMessage("7905280916", null, message, null, null);
                                 Toast.makeText(MainActivity.this, "SMS sent with location!", Toast.LENGTH_SHORT).show();
                             } else {
