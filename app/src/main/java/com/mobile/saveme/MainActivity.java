@@ -2,9 +2,11 @@ package com.mobile.saveme;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.view.View;
@@ -19,16 +21,29 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.common.api.ResolvableApiException;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btnStart ,saidbtn;
+    private Button saidbtn;
     private TextView saidtext;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
+    private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
 
     private FusedLocationProviderClient fusedLocationClient;
+    private Handler handler;
+    private final int INTERVAL = 180000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +51,15 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        btnStart = findViewById(R.id.btnStart);
-        saidbtn=findViewById(R.id.saidbtn);
-        saidtext=findViewById(R.id.saidtext);
+        Button btnStart = findViewById(R.id.btnStart);
+        saidbtn = findViewById(R.id.saidbtn);
+        saidtext = findViewById(R.id.saidtext);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Request permissions
-        requestPermissions();
 
+        handler = new Handler();
+
+        requestPermissions();
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
 
-                    // Get the last known location
-                    getLastKnownLocation();
+                    startLocationUpdatesEveryThreeMinutes();
                 } else {
                     Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
                 }
@@ -61,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-        // Request SMS permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -69,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                     SMS_PERMISSION_CODE);
         }
 
-        // Request location permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -78,21 +91,68 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public  void speak(View view){
-        Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+    public void speak(View view) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Start Speaking");
-        startActivityForResult(intent,100);
+        startActivityForResult(intent, 100);
     }
 
-    protected void onActivityResult(int requestCode,int resultCode, @NonNull Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==100 && resultCode ==RESULT_OK){
-            saidtext.setText(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                String spokenText = results.get(0).trim();
+                if (spokenText.equalsIgnoreCase("help") || spokenText.equalsIgnoreCase("help me")) {
+                    getLastKnownLocation();
+                }
+                saidtext.setText(spokenText);
+            }
         }
+
     }
 
+    private void startLocationUpdatesEveryThreeMinutes() {
+        Runnable locationUpdateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkLocationSettings();
+                handler.postDelayed(this, INTERVAL);
+            }
+        };
+
+        handler.post(locationUpdateRunnable);
+    }
+
+    private void checkLocationSettings() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(this, locationSettingsResponse -> {
+            getLastKnownLocation();
+        });
+
+        task.addOnFailureListener(this, e -> {
+            if (e instanceof ResolvableApiException) {
+
+                try {
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(MainActivity.this, LOCATION_SETTINGS_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException sendEx) {
+                                System.out.println(sendEx.getMessage());
+                }
+            }
+        });
+    }
 
     private void getLastKnownLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -103,22 +163,42 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Location location) {
                             if (location != null) {
-                                double latitude = location.getLatitude();
-                                double longitude = location.getLongitude();
 
-                                // Send SMS with location coordinates
-                                SmsManager smsManager = SmsManager.getDefault();
-                                String message = "lat: " + latitude + ", "+"log: " + longitude;
-                                smsManager.sendTextMessage("7905280916", null, message, null, null);
-                                Toast.makeText(MainActivity.this, "SMS sent with location!", Toast.LENGTH_SHORT).show();
+                                sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                             } else {
-                                Toast.makeText(MainActivity.this, "Unable to fetch location", Toast.LENGTH_SHORT).show();
+                                requestNewLocation();
                             }
                         }
                     });
         } else {
             Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void requestNewLocation() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location updatedLocation = locationResult.getLastLocation();
+                if (updatedLocation != null) {
+                    sendSmsWithLocation(updatedLocation.getLatitude(), updatedLocation.getLongitude());
+                }
+            }
+        }, null);
+    }
+
+    private void sendSmsWithLocation(double latitude, double longitude) {
+        SmsManager smsManager = SmsManager.getDefault();
+        String message = "lat: " + latitude + ", log: " + longitude;
+        smsManager.sendTextMessage("7905280916", null, message, null, null);
+        Toast.makeText(MainActivity.this, "SMS sent with location!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

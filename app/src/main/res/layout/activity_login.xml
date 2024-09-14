@@ -8,24 +8,25 @@
     tools:context=".LoginActivity">
 
     <!-- App Title TextView -->
+
+    <!-- Email or Phone Input -->
+
     <TextView
         android:id="@+id/login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="16dp"
         android:text="Log In"
         android:textColor="@android:color/white"
         android:textSize="36sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/etEmailOrPhone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/etEmailOrPhone"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="200dp"
-        android:layout_marginBottom="16dp"
         tools:ignore="HardcodedText" />
 
-    <!-- Email or Phone Input -->
     <EditText
         android:id="@+id/etEmailOrPhone"
         android:layout_width="0dp"
