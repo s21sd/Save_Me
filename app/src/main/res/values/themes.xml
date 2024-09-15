@@ -3,7 +3,7 @@
     <style name="Theme.SaveMe" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">#ff0000</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->
@@ -12,7 +12,7 @@
         <item name="colorOnSecondary">@color/black</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">#ff0000</item>
 
         <!-- Remove the action bar -->
         <item name="actionBarStyle">@style/ActionBarStyle</item>

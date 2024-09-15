@@ -5,9 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light"
+    android:background="#ff0000"
     tools:context=".MainActivity">
 
+    <!-- Start Button -->
     <Button
         android:id="@+id/btnStart"
         android:layout_width="120dp"
@@ -18,67 +19,67 @@
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tvTapToStart"
+        app:layout_constraintBottom_toTopOf="@+id/tvStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.5"/>
+        app:layout_constraintVertical_bias="0.4"/>
 
-    <!-- Text Under the Button -->
+    <!-- Title Text -->
     <TextView
         android:id="@+id/tvStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Start"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/btnStart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
-    <!-- Tap to Start Text -->
-    <TextView
-        android:id="@+id/tvTapToStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <!-- Profile Icon -->
+    <Button
+        android:id="@+id/profileIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="40dp"
-
-        android:text="Tap for urgent help. Activate SOS now. Your safety matters.Immediate assistance at your fingertips."
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvStart" />
-
-    <TextView
-        android:id="@+id/saidtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="you said "
-        android:textSize="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/saidbtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTapToStart"
-        app:layout_constraintVertical_bias="0.313" />
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/baseline_account_circle_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <Button
         android:id="@+id/saidbtn"
         android:onClick="speak"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="289dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/baseline_mic_24"
+        app:layout_constraintBottom_toTopOf="@+id/tvTapToStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStart" />
+
+    <TextView
+        android:id="@+id/tvTapToStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="80dp"
-        android:background="@drawable/rounded_border_edittext"
-        android:text="Say Something"
-        android:textColor="@color/black"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:text="Tap for urgent help. Activate SOS now. Your safety matters. Immediate assistance at your fingertips."
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="1.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

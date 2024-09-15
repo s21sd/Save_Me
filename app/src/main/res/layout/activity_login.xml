@@ -4,91 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light"
+    android:background="#FF3B30"
     tools:context=".LoginActivity">
 
-    <!-- App Title TextView -->
-
-    <!-- Email or Phone Input -->
-
+    <!-- Login Title -->
     <TextView
         android:id="@+id/login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="180dp"
         android:text="Log In"
         android:textColor="@android:color/white"
-        android:textSize="36sp"
+        android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/etEmailOrPhone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 
+    <!-- Email or Phone EditText -->
     <EditText
         android:id="@+id/etEmailOrPhone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/rounded_border_edittext"
         android:hint="Email or Phone"
-        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
         android:padding="16dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/login_title"
-        app:layout_constraintHorizontal_bias="0.5"
         tools:ignore="HardcodedText,TextFields" />
 
-    <!-- Password Input -->
+    <!-- Password EditText -->
     <EditText
         android:id="@+id/etPasswordLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_border_edittext"
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="16dp"
-        android:background="@drawable/rounded_border_edittext"
-        app:layout_constraintTop_toBottomOf="@id/etEmailOrPhone"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"
-        tools:ignore="Autofill,HardcodedText" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etEmailOrPhone"
+        tools:ignore="HardcodedText,Autofill" />
 
     <!-- Login Button -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:text="Login"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@android:color/white"
+        android:background="@drawable/rounded_button"
+        android:text="Login"
         android:textColor="@android:color/black"
-        android:background="@drawable/rounded_border_edittext"
-        app:layout_constraintTop_toBottomOf="@id/etPasswordLogin"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etPasswordLogin"
         tools:ignore="HardcodedText" />
-
-    <!-- Additional TextView for Already Have an Account Navigation -->
     <TextView
         android:id="@+id/tvAlreadyHaveAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Already have an account? Sign In"
+        android:layout_marginTop="24dp"
+      android:textStyle="bold"
+        android:text="Don't have an account ?"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/btnLogin"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
         tools:ignore="HardcodedText" />
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@android:color/white"
+        android:background="@drawable/rounded_button"
+        android:text="Sign Up"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAlreadyHaveAccount"
+        tools:ignore="HardcodedText" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

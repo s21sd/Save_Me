@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText editEmailLogin, editPasswordLogin;
-    private Button loginBtn;
+    private Button loginBtn,btnSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,14 @@ public class LoginActivity extends AppCompatActivity {
         editEmailLogin = findViewById(R.id.etEmailOrPhone);
         editPasswordLogin = findViewById(R.id.etPasswordLogin);
         loginBtn = findViewById(R.id.btnLogin);
-
+        btnSignUp = findViewById(R.id.btnSignUp);
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            Intent intent =new Intent(LoginActivity.this,SignUpActivity.class);
+            startActivity(intent);
+            }
+        });
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

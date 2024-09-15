@@ -11,7 +11,6 @@ import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,8 +34,7 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private Button saidbtn;
-    private TextView saidtext;
+    private Button saidbtn,profileIcon;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
@@ -53,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnStart = findViewById(R.id.btnStart);
         saidbtn = findViewById(R.id.saidbtn);
-        saidtext = findViewById(R.id.saidtext);
+        profileIcon=findViewById(R.id.profileIcon);
+        profileIcon.setOnClickListener(view -> {
+            Intent intent =new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
@@ -61,16 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermissions();
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+        btnStart.setOnClickListener(view -> {
+            if (ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
 
-                    startLocationUpdatesEveryThreeMinutes();
-                } else {
-                    Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
-                }
+                startLocationUpdatesEveryThreeMinutes();
+            } else {
+                Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 if (spokenText.equalsIgnoreCase("help") || spokenText.equalsIgnoreCase("help me")) {
                     getLastKnownLocation();
                 }
-                saidtext.setText(spokenText);
+//                saidtext.setText(spokenText);
             }
         }
 
