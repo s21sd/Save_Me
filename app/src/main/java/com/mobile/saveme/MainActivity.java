@@ -33,7 +33,6 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private Button profileIcon;
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button btnStart = findViewById(R.id.btnStart);
-        profileIcon = findViewById(R.id.profileIcon);
+        Button profileIcon = findViewById(R.id.profileIcon);
         profileIcon.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);

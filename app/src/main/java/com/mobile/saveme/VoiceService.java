@@ -93,11 +93,11 @@ public class VoiceService extends Service {
                         if (match.equalsIgnoreCase("help") || match.equalsIgnoreCase("help me")) {
                             // Trigger action, for example, start the app
                             Log.d("Got",match);
-                            activateApp();
+
                         }
                     }
                 }
-                startListening(); // Restart listening after getting results
+                startListening();
             }
 
             @Override
@@ -119,18 +119,6 @@ public class VoiceService extends Service {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         speechRecognizer.startListening(intent);
-    }
-
-    private void activateApp() {
-        Log.d("message", "Activating App");
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            startActivity(intent);
-        } catch (Exception e) {
-            Log.e("TAG", "Failed to start MainActivity: " + e.getMessage());
-            Toast.makeText(this, "Failed to start MainActivity: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
