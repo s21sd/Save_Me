@@ -27,14 +27,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private Button saidbtn,profileIcon;
+    private Button profileIcon;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button btnStart = findViewById(R.id.btnStart);
-        saidbtn = findViewById(R.id.saidbtn);
         profileIcon=findViewById(R.id.profileIcon);
         profileIcon.setOnClickListener(view -> {
             Intent intent =new Intent(MainActivity.this, SettingsActivity.class);
@@ -136,9 +134,7 @@ public class MainActivity extends AppCompatActivity {
         SettingsClient client = LocationServices.getSettingsClient(this);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-        task.addOnSuccessListener(this, locationSettingsResponse -> {
-            getLastKnownLocation();
-        });
+        task.addOnSuccessListener(this, locationSettingsResponse -> getLastKnownLocation());
 
         task.addOnFailureListener(this, e -> {
             if (e instanceof ResolvableApiException) {
@@ -158,15 +154,12 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED) {
 
             fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
 
-                                sendSmsWithLocation(location.getLatitude(), location.getLongitude());
-                            } else {
-                                requestNewLocation();
-                            }
+                            sendSmsWithLocation(location.getLatitude(), location.getLongitude());
+                        } else {
+                            requestNewLocation();
                         }
                     });
         } else {

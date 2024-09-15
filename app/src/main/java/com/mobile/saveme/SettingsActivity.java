@@ -1,6 +1,7 @@
 package com.mobile.saveme;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +24,9 @@ public class SettingsActivity extends AppCompatActivity {
     private ContactAdapter contactAdapter;
     private List<Contact> contactList;
     private EditText etName, etPhoneNumber;
-    private Button btnAddContact;
+    private Button btnAddContact,btnLogout;
     private SharedPreferences sharedPreferences;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +37,12 @@ public class SettingsActivity extends AppCompatActivity {
         etName = findViewById(R.id.etName);
         etPhoneNumber = findViewById(R.id.etPhoneNumber);
         btnAddContact = findViewById(R.id.btnAddContact);
+        btnLogout = findViewById(R.id.btnLogout);
 
         sharedPreferences = getSharedPreferences("contacts_prefs", Context.MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
         contactList = loadContactsFromPreferences();
 
-        // Initialize the adapter and RecyclerView
         contactAdapter = new ContactAdapter(contactList, new ContactAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(int position) {
@@ -54,6 +59,12 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addContact();
+            }
+        });
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutUser();
             }
         });
     }
@@ -141,5 +152,13 @@ public class SettingsActivity extends AppCompatActivity {
             contactAdapter.notifyDataSetChanged(); // Notify adapter of changes
             saveContactToPreferences("Save_Me_Company", "7905280916");
         }
+    }
+    private void logoutUser() {
+        mAuth.signOut();
+        Toast.makeText(SettingsActivity.this, "Logged out successfully.", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
