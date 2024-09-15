@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -34,37 +34,39 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private Button profileIcon;
+    private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_PERMISSION_CODE = 100;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
-    private final int INTERVAL = 180000;
+    private final int INTERVAL = 180000; // 3 minutes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         Button btnStart = findViewById(R.id.btnStart);
-        profileIcon=findViewById(R.id.profileIcon);
+        profileIcon = findViewById(R.id.profileIcon);
         profileIcon.setOnClickListener(view -> {
-            Intent intent =new Intent(MainActivity.this, SettingsActivity.class);
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-
         handler = new Handler();
 
         requestPermissions();
+        if (checkPermissions()) {
+            startVoiceService();
+        } else {
+            requestPermissionsForAudio();
+        }
 
         btnStart.setOnClickListener(view -> {
-            if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
                 startLocationUpdatesEveryThreeMinutes();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
@@ -72,19 +74,60 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS},
-                    SMS_PERMISSION_CODE);
-        }
+    private boolean checkPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_CODE);
+    private void requestPermissionsForAudio() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_CODE);
+    }
+
+    private void startVoiceService() {
+        Intent serviceIntent = new Intent(this, VoiceService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allPermissionsGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+            if (allPermissionsGranted) {
+                startVoiceService();
+            } else {
+                Toast.makeText(this, "Permission denied, cannot start voice service", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == LOCATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SMS_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
         }
     }
 
@@ -98,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 100 && resultCode == RESULT_OK) {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results != null && !results.isEmpty()) {
@@ -106,10 +148,8 @@ public class MainActivity extends AppCompatActivity {
                 if (spokenText.equalsIgnoreCase("help") || spokenText.equalsIgnoreCase("help me")) {
                     getLastKnownLocation();
                 }
-//                saidtext.setText(spokenText);
             }
         }
-
     }
 
     private void startLocationUpdatesEveryThreeMinutes() {
@@ -120,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(this, INTERVAL);
             }
         };
-
         handler.post(locationUpdateRunnable);
     }
 
@@ -138,25 +177,21 @@ public class MainActivity extends AppCompatActivity {
 
         task.addOnFailureListener(this, e -> {
             if (e instanceof ResolvableApiException) {
-
                 try {
                     ResolvableApiException resolvable = (ResolvableApiException) e;
                     resolvable.startResolutionForResult(MainActivity.this, LOCATION_SETTINGS_REQUEST_CODE);
                 } catch (IntentSender.SendIntentException sendEx) {
-                                System.out.println(sendEx.getMessage());
+                    sendEx.printStackTrace();
                 }
             }
         });
     }
 
     private void getLastKnownLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-
                             sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                         } else {
                             requestNewLocation();
@@ -175,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -191,23 +227,5 @@ public class MainActivity extends AppCompatActivity {
         String message = "lat: " + latitude + ", log: " + longitude;
         smsManager.sendTextMessage("7905280916", null, message, null, null);
         Toast.makeText(MainActivity.this, "SMS sent with location!", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == LOCATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }
