@@ -1,8 +1,10 @@
 package com.mobile.saveme;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -30,17 +33,22 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.common.api.ResolvableApiException;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int SMS_PERMISSION_CODE = 1;
-    private static final int LOCATION_PERMISSION_CODE = 100;
+    private static final int LOCATION_PERMISSION_CODE = 102;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
+    private static final int SPEECH_REQUEST_CODE = 101;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
-    private final int INTERVAL = 180000; // 3 minutes
+    private static final int INTERVAL = 300000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler();
 
         requestPermissions();
+
         if (checkPermissions()) {
             startVoiceService();
         } else {
@@ -93,31 +102,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            boolean allPermissionsGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allPermissionsGranted = false;
-                    break;
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startVoiceService();
+                } else {
+                    Toast.makeText(this, "Permission denied, cannot start voice service", Toast.LENGTH_SHORT).show();
                 }
-            }
-            if (allPermissionsGranted) {
-                startVoiceService();
-            } else {
-                Toast.makeText(this, "Permission denied, cannot start voice service", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == LOCATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
-            }
+                break;
+            case SMS_PERMISSION_CODE:
+                Toast.makeText(this, grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ? "SMS permission granted" : "SMS permission denied", Toast.LENGTH_SHORT).show();
+                break;
+            case LOCATION_PERMISSION_CODE:
+                Toast.makeText(this, grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ? "Location permission granted" : "Location permission denied", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
@@ -134,17 +132,17 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Start Speaking");
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == RESULT_OK) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results != null && !results.isEmpty()) {
                 String spokenText = results.get(0).trim();
-                if (spokenText.equalsIgnoreCase("help") || spokenText.equalsIgnoreCase("help me")) {
+                if ("help".equalsIgnoreCase(spokenText) || "help me".equalsIgnoreCase(spokenText)) {
                     getLastKnownLocation();
                 }
             }
@@ -204,9 +202,10 @@ public class MainActivity extends AppCompatActivity {
     private void requestNewLocation() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000);
+        locationRequest.setInterval(300000);
+        locationRequest.setFastestInterval(300000);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -218,13 +217,34 @@ public class MainActivity extends AppCompatActivity {
                     sendSmsWithLocation(updatedLocation.getLatitude(), updatedLocation.getLongitude());
                 }
             }
-        }, null);
+        }, getMainLooper());
+    }
+    private void sendSmsWithLocation(double latitude, double longitude) {
+        SharedPreferences sharedPreferences = getSharedPreferences("contacts_prefs", Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString("contactList", null);
+        Log.d("SharedPreferences", "Stored JSON: " + json);
+
+        if (json != null) {
+            try {
+                JSONArray contactArray = new JSONArray(json);
+                SmsManager smsManager = SmsManager.getDefault();
+                String message = "Location: lat: " + latitude + ", log: " + longitude;
+                smsManager.sendTextMessage("7905280916", null, message, null, null);
+                Toast.makeText(MainActivity.this, "SMS sent to " + "7905280916", Toast.LENGTH_SHORT).show();
+                for (int i = 1; i < contactArray.length(); i++) {
+                    JSONObject contact = contactArray.getJSONObject(i);
+                    String phoneNumber = contact.getString("phoneNumber");
+
+                    smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+                    Toast.makeText(MainActivity.this, "SMS sent to " + phoneNumber, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error parsing contact list", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "No contacts available to send SMS", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void sendSmsWithLocation(double latitude, double longitude) {
-        SmsManager smsManager = SmsManager.getDefault();
-        String message = "lat: " + latitude + ", log: " + longitude;
-        smsManager.sendTextMessage("7905280916", null, message, null, null);
-        Toast.makeText(MainActivity.this, "SMS sent with location!", Toast.LENGTH_SHORT).show();
-    }
 }
