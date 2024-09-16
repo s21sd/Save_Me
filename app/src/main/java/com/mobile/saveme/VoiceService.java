@@ -93,6 +93,10 @@ public class VoiceService extends Service {
                         if (match.equalsIgnoreCase("help") || match.equalsIgnoreCase("help me")) {
                             // Trigger action, for example, start the app
                             Log.d("Got",match);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("triggerAction", true);
+                            startActivity(intent);
 
                         }
                     }
