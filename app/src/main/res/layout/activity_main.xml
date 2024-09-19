@@ -41,7 +41,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
+    <TextView
+        android:id="@+id/tvLatLong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:text="Latitude: , Longitude: "
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/helperlocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStart" />
     <!-- Profile Icon -->
+
+    <Button
+        android:id="@+id/helperlocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="70dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_button"
+        android:text="Helper Location"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/saidbtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStart"
+        app:layout_constraintVertical_bias="1.0" />
+
     <Button
         android:id="@+id/profileIcon"
         android:layout_width="50dp"
@@ -54,12 +86,12 @@
 
     <Button
         android:id="@+id/saidbtn"
-        android:onClick="speak"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginTop="289dp"
         android:layout_marginBottom="100dp"
         android:background="@drawable/baseline_mic_24"
+        android:onClick="speak"
         app:layout_constraintBottom_toTopOf="@+id/tvTapToStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
