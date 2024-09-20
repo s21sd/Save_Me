@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,13 +43,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int SMS_PERMISSION_CODE = 1;
-    private static final int LOCATION_PERMISSION_CODE = 102;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
     private static final int SPEECH_REQUEST_CODE = 101;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
-    private static final int INTERVAL = 300000;
+    private static final int INTERVAL = 180000;
     private TextView tvLatLong;
 
     private String latitude = "0.0";
@@ -66,11 +63,12 @@ public class MainActivity extends AppCompatActivity {
         Button profileIcon = findViewById(R.id.profileIcon);
         Button helperLocation = findViewById(R.id.helperlocation);
 
-        requestSmsPermission();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
 
+        // Request all necessary permissions
         requestAllPermissions();
+
         handleIncomingIntent(getIntent());
 
         profileIcon.setOnClickListener(view -> {
@@ -80,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(view -> {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                // First, get and send the current location
+                getLastKnownLocation();
+
+                // Then, start the recurring location update every 3 minutes
                 startLocationUpdatesEveryThreeMinutes();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
@@ -88,16 +90,45 @@ public class MainActivity extends AppCompatActivity {
 
         helperLocation.setOnClickListener(view -> {
             Intent intent3 = new Intent(MainActivity.this, MapActivity.class);
+            intent3.putExtra("latitude", latitude);
+            intent3.putExtra("longitude", longitude);
             startActivity(intent3);
         });
     }
 
-    private void requestSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, SMS_PERMISSION_CODE);
+    private void requestAllPermissions() {
+        // Check if any permissions are missing
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            // Request all necessary permissions in one go
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.RECORD_AUDIO
+            }, PERMISSION_REQUEST_CODE);
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0) {
+                boolean smsGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                boolean locationGranted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                boolean audioGranted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+
+                if (smsGranted && locationGranted && audioGranted) {
+                    Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Permissions denied. Functionality may be limited.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 
     private void handleIncomingIntent(Intent intent) {
         if (intent != null && intent.hasExtra("message")) {
@@ -114,56 +145,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void extractLatLongFromMessage(String message) {
+        Log.d("MainActivity", "Extracting lat/long from message: " + message);
         try {
-            // Split the message by comma
             String[] parts = message.split(",");
-
             if (parts.length == 2) {
-                // Split each part by colon and trim the values
                 String[] latitudeParts = parts[0].split(":");
                 String[] longitudeParts = parts[1].split(":");
 
                 if (latitudeParts.length == 2 && longitudeParts.length == 2) {
                     latitude = latitudeParts[1].trim();
                     longitude = longitudeParts[1].trim();
+                    Log.d("MainActivity", "Extracted Latitude: " + latitude + ", Longitude: " + longitude);
                     tvLatLong.setText("Latitude: " + latitude + ", Longitude: " + longitude);
                 } else {
-                    Log.e("MainActivity", "Latitude or Longitude format is incorrect: " + message);
+                    Log.e("MainActivity", "Latitude or Longitude format is incorrect.");
                 }
             } else {
-                Log.e("MainActivity", "Message format is incorrect. Expected format: 'latitude: value, longitude: value'. Received: " + message);
+                Log.e("MainActivity", "Message format is incorrect.");
             }
         } catch (Exception e) {
             Log.e("MainActivity", "Error parsing message: " + e.getMessage());
-        }
-    }
-    private void requestAllPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.SEND_SMS,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.RECORD_AUDIO
-            }, PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            boolean smsGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            boolean locationGranted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-            boolean audioGranted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
-
-            if (smsGranted && locationGranted && audioGranted) {
-                startVoiceService();
-                Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Permissions denied. App functionality may be limited.", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -188,13 +189,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startVoiceService() {
-        Intent serviceIntent = new Intent(this, VoiceService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
+    private void startLocationUpdatesEveryThreeMinutes() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkLocationSettings();
+                handler.postDelayed(this, INTERVAL);
+            }
+        }, INTERVAL);
     }
 
     private void checkLocationSettings() {
@@ -223,8 +225,10 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
+                            // Send SMS immediately with the current location
                             sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                         } else {
+                            // Request a new location if last known is null
                             requestNewLocation();
                         }
                     });
@@ -234,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
     private void requestNewLocation() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(300000);
-        locationRequest.setFastestInterval(300000);
+        locationRequest.setInterval(INTERVAL);
+        locationRequest.setFastestInterval(INTERVAL);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -244,15 +248,20 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                Location updatedLocation = locationResult.getLastLocation();
-                if (updatedLocation != null) {
-                    sendSmsWithLocation(updatedLocation.getLatitude(), updatedLocation.getLongitude());
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                 }
             }
-        }, getMainLooper());
+        }, null);
     }
 
     private void sendSmsWithLocation(double latitude, double longitude) {
+        SmsManager smsManager2 = SmsManager.getDefault();
+        String message2 = "Help! I am at Location: lat: " + latitude + ", log: " + longitude;
+
+        // Send to predefined number and contact list
+        smsManager2.sendTextMessage("7905280916", null, message2, null, null);
         SharedPreferences sharedPreferences = getSharedPreferences("contacts_prefs", Context.MODE_PRIVATE);
         String json = sharedPreferences.getString("contactList", null);
         Log.d("SharedPreferences", "Stored JSON: " + json);
@@ -282,19 +291,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startLocationUpdatesEveryThreeMinutes() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                checkLocationSettings();
-                handler.postDelayed(this, INTERVAL);
-            }
-        }, INTERVAL);
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
-    }
 }

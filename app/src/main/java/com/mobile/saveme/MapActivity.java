@@ -52,6 +52,19 @@
             } else {
                 initializeMap();
             }
+
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra("latitude") && intent.hasExtra("longitude")) {
+                double latitude = Double.parseDouble(intent.getStringExtra("latitude"));
+                double longitude = Double.parseDouble(intent.getStringExtra("longitude"));
+                Log.d("MapActivity", "Received Latitude: " + latitude + ", Longitude: " + longitude);
+
+                // Use the coordinates to focus the map on the location
+                GeoPoint startPoint = new GeoPoint(latitude, longitude);
+                controller.setCenter(startPoint);
+            } else {
+                Log.e("MapActivity", "No location data received.");
+            }
         }
 
         private void initializeMap() {
