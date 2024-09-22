@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- Permissions -->
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
 
+    <!-- Required Permissions -->
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -16,11 +14,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
-    <uses-permission
-        android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
+    <!-- For capturing audio (optional, if needed) -->
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -33,36 +30,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SaveMe"
         tools:targetApi="31">
-        <activity
-            android:name=".MapActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" /> <!-- Splash Activity -->
+
+        <!-- Splash Activity (entry point) -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Login Activity -->
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" /> <!-- Sign Up Activity -->
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" /> <!-- Main Activity -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+        </activity>
 
+        <!-- Other Activities -->
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".SignUpActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".MapActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+
+        <!-- Voice Service for handling audio recording in foreground -->
         <service
             android:name=".VoiceService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
+        <!-- SMS Receiver -->
         <receiver
             android:name=".MessageReceiver"
             android:exported="true"
@@ -71,6 +63,7 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

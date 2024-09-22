@@ -7,7 +7,6 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -15,7 +14,6 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -32,7 +31,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
     private static final int INTERVAL = 180000;
-    private TextView tvLatLong;
+//    private TextView tvLatLong;
 
     private String latitude = "0.0";
     private String longitude = "0.0";
@@ -58,15 +56,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvLatLong = findViewById(R.id.tvLatLong);
+//        tvLatLong = findViewById(R.id.tvLatLong);
         Button btnStart = findViewById(R.id.btnStart);
         Button profileIcon = findViewById(R.id.profileIcon);
-        Button helperLocation = findViewById(R.id.helperlocation);
+//        Button helperLocation = findViewById(R.id.helperlocation);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
 
-        // Request all necessary permissions
+
         requestAllPermissions();
 
         handleIncomingIntent(getIntent());
@@ -78,31 +76,30 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(view -> {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-                // First, get and send the current location
+
                 getLastKnownLocation();
 
-                // Then, start the recurring location update every 3 minutes
                 startLocationUpdatesEveryThreeMinutes();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        helperLocation.setOnClickListener(view -> {
-            Intent intent3 = new Intent(MainActivity.this, MapActivity.class);
-            intent3.putExtra("latitude", latitude);
-            intent3.putExtra("longitude", longitude);
-            startActivity(intent3);
-        });
+//        helperLocation.setOnClickListener(view -> {     //  Soon I will  add
+//            Intent intent3 = new Intent(MainActivity.this, MapActivity.class);
+//            intent3.putExtra("latitude", latitude);
+//            intent3.putExtra("longitude", longitude);
+//            startActivity(intent3);
+//        });
     }
 
     private void requestAllPermissions() {
-        // Check if any permissions are missing
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
-            // Request all necessary permissions in one go
+
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     latitude = latitudeParts[1].trim();
                     longitude = longitudeParts[1].trim();
                     Log.d("MainActivity", "Extracted Latitude: " + latitude + ", Longitude: " + longitude);
-                    tvLatLong.setText("Latitude: " + latitude + ", Longitude: " + longitude);
+//                    tvLatLong.setText("Latitude: " + latitude + ", Longitude: " + longitude);
                 } else {
                     Log.e("MainActivity", "Latitude or Longitude format is incorrect.");
                 }
@@ -242,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(INTERVAL);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             return;
         }
 
@@ -258,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendSmsWithLocation(double latitude, double longitude) {
         SmsManager smsManager2 = SmsManager.getDefault();
-        String message2 = "Help! I am at Location: lat: " + latitude + ", log: " + longitude;
+        String message2 = "lat: " + latitude + ", log: " + longitude;
 
         // Send to predefined number and contact list
         smsManager2.sendTextMessage("7905280916", null, message2, null, null);
@@ -270,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONArray contactArray = new JSONArray(json);
                 SmsManager smsManager = SmsManager.getDefault();
-                String message = "Help! I am at Location: lat: " + latitude + ", log: " + longitude;
+                String message = "lat: " + latitude + ", log: " + longitude;
 
                 // Send to predefined number and contact list
                 smsManager.sendTextMessage("7905280916", null, message, null, null);
@@ -290,6 +288,5 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No contacts found.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 }
