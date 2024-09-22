@@ -40,15 +40,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
-    private static final int SMS_PERMISSION_CODE = 1;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
     private static final int SPEECH_REQUEST_CODE = 101;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
     private static final int INTERVAL = 180000;
-//    private TextView tvLatLong;
-
     private String latitude = "0.0";
     private String longitude = "0.0";
 
@@ -56,11 +53,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        tvLatLong = findViewById(R.id.tvLatLong);
         Button btnStart = findViewById(R.id.btnStart);
         Button profileIcon = findViewById(R.id.profileIcon);
-//        Button helperLocation = findViewById(R.id.helperlocation);
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
 
@@ -85,12 +79,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        helperLocation.setOnClickListener(view -> {     //  Soon I will  add
-//            Intent intent3 = new Intent(MainActivity.this, MapActivity.class);
-//            intent3.putExtra("latitude", latitude);
-//            intent3.putExtra("longitude", longitude);
-//            startActivity(intent3);
-//        });
     }
 
     private void requestAllPermissions() {
@@ -153,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                     latitude = latitudeParts[1].trim();
                     longitude = longitudeParts[1].trim();
                     Log.d("MainActivity", "Extracted Latitude: " + latitude + ", Longitude: " + longitude);
-//                    tvLatLong.setText("Latitude: " + latitude + ", Longitude: " + longitude);
                 } else {
                     Log.e("MainActivity", "Latitude or Longitude format is incorrect.");
                 }
@@ -222,10 +209,10 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-                            // Send SMS immediately with the current location
+
                             sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                         } else {
-                            // Request a new location if last known is null
+
                             requestNewLocation();
                         }
                     });
@@ -258,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
         SmsManager smsManager2 = SmsManager.getDefault();
         String message2 = "lat: " + latitude + ", log: " + longitude;
 
-        // Send to predefined number and contact list
         smsManager2.sendTextMessage("7905280916", null, message2, null, null);
         SharedPreferences sharedPreferences = getSharedPreferences("contacts_prefs", Context.MODE_PRIVATE);
         String json = sharedPreferences.getString("contactList", null);
@@ -269,8 +255,6 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray contactArray = new JSONArray(json);
                 SmsManager smsManager = SmsManager.getDefault();
                 String message = "lat: " + latitude + ", log: " + longitude;
-
-                // Send to predefined number and contact list
                 smsManager.sendTextMessage("7905280916", null, message, null, null);
                 Toast.makeText(MainActivity.this, "SMS sent to 7905280916", Toast.LENGTH_SHORT).show();
 

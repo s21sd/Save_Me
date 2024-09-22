@@ -39,11 +39,6 @@ public class LoginActivity extends AppCompatActivity {
                 // Call for the login
                 auth.signInWithEmailAndPassword(email, password)
                         .addOnSuccessListener(authResult -> {
-                            Log.d("LoginDetails", "Login Successful");
-                            Log.d("LoginDetails", "User UID: " + authResult.getUser().getUid());
-                            Log.d("LoginDetails", "User Email: " + authResult.getUser().getEmail());
-                            Log.d("LoginDetails", "User Display Name: " + authResult.getUser().getDisplayName());
-                            Log.d("LoginDetails", "User Photo URL: " + authResult.getUser());
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();

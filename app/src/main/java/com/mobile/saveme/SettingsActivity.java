@@ -86,15 +86,15 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         contactList.remove(position);
-        saveContactsToPreferences(); // Save updated list
+        saveContactsToPreferences();
         contactAdapter.notifyDataSetChanged();
     }
 
     private void saveContactsToPreferences() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(contactList); // Convert contact list to JSON
-        editor.putString("contactList", json); // Save JSON string
+        String json = gson.toJson(contactList);
+        editor.putString("contactList", json);
         editor.apply();
     }
 
@@ -105,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (json != null) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<Contact>>() {}.getType();
-            contacts = gson.fromJson(json, type); // Convert JSON string back to list
+            contacts = gson.fromJson(json, type);
         }
 
         return contacts;

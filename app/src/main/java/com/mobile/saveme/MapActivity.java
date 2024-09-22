@@ -59,7 +59,7 @@
                 double longitude = Double.parseDouble(intent.getStringExtra("longitude"));
                 Log.d("MapActivity", "Received Latitude: " + latitude + ", Longitude: " + longitude);
 
-                // Use the coordinates to focus the map on the location
+
                 GeoPoint startPoint = new GeoPoint(latitude, longitude);
                 controller.setCenter(startPoint);
             } else {
@@ -68,36 +68,31 @@
         }
 
         private void initializeMap() {
-            // Initialize osmdroid configuration
+
             Configuration.getInstance().load(
                     getApplicationContext(),
                     getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
             );
 
-            // Set up the MapView
 
             mMap = findViewById(R.id.osmmap);
             mMap.setTileSource(TileSourceFactory.MAPNIK);
             mMap.setMultiTouchControls(true);
 
-            // Set up MyLocation overlay
             mMyLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mMap);
             mMyLocationOverlay.enableMyLocation();
             mMyLocationOverlay.enableFollowLocation();
             mMyLocationOverlay.setDrawAccuracyEnabled(true);
             mMap.getOverlays().add(mMyLocationOverlay);
 
-            // Set map controller
             controller = mMap.getController();
             controller.setZoom(16.0);
 
-            // Retrieve coordinates from Intent
             Intent intent = getIntent();
             double manualLatitude = intent.getDoubleExtra("latitude", 0.0);
             double manualLongitude = intent.getDoubleExtra("longitude", 0.0);
             GeoPoint manualLocation = new GeoPoint(manualLatitude, manualLongitude);
 
-            // Once the first fix is acquired, draw the route and center the map
             mMyLocationOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
                 GeoPoint currentLocation = mMyLocationOverlay.getMyLocation();
                 if (currentLocation != null) {

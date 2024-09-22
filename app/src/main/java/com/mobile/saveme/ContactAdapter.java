@@ -23,14 +23,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     @NonNull
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the contact_item layout
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_item, parent, false);
         return new ContactViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ContactViewHolder holder, int position) {
-        // Bind the contact data to the view holder
+
         Contact contact = contactList.get(position);
         holder.bind(contact);
     }
@@ -47,20 +47,20 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Initialize views
+
             nameTextView = itemView.findViewById(R.id.contactName);
             phoneNumberTextView = itemView.findViewById(R.id.contactPhoneNumber);
 
-            // Set up the long click listener
+
             itemView.setOnLongClickListener(v -> {
                 if (onItemLongClickListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         onItemLongClickListener.onItemLongClick(position);
-                        return true; // Indicate that the long click was handled
+                        return true;
                     }
                 }
-                return false; // Indicate that the long click was not handled
+                return false;
             });
         }
 

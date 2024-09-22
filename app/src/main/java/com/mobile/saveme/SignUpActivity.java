@@ -25,7 +25,6 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance();
 
         editNameSignup = findViewById(R.id.etName);
@@ -33,39 +32,29 @@ public class SignUpActivity extends AppCompatActivity {
         editPasswordSignup = findViewById(R.id.etPassword);
         btnCreate = findViewById(R.id.btnSignUp);
         btnLogin=findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =new Intent(SignUpActivity.this,LoginActivity.class);
-                startActivity(intent);
-            }
+        btnLogin.setOnClickListener(view -> {
+            Intent intent =new Intent(SignUpActivity.this,LoginActivity.class);
+            startActivity(intent);
         });
 
-        btnCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = editNameSignup.getText().toString().trim();
-                String email = editEmailSignup.getText().toString().trim();
-                String password = editPasswordSignup.getText().toString().trim();
+        btnCreate.setOnClickListener(view -> {
+            String name = editNameSignup.getText().toString().trim();
+            String email = editEmailSignup.getText().toString().trim();
+            String password = editPasswordSignup.getText().toString().trim();
 
-                if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "No empty fields are allowed", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Call Firebase Auth to create a new user
-                    auth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(SignUpActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                                        finish(); // Optional: Call finish() to close the SignUpActivity
-                                    } else {
-                                        Toast.makeText(SignUpActivity.this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                }
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "No empty fields are allowed", Toast.LENGTH_SHORT).show();
+            } else {
+                auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(SignUpActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(SignUpActivity.this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
     }

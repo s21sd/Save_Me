@@ -91,7 +91,7 @@ public class VoiceService extends Service {
                     for (String match : matches) {
                         Log.d(TAG, "Match: " + match);
                         if (match.equalsIgnoreCase("help") || match.equalsIgnoreCase("help me")) {
-                            // Trigger action, for example, start the app
+
                             Log.d("Got",match);
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -128,7 +128,7 @@ public class VoiceService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Service Started");
-        // Create a notification to show the service is running
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Voice Service")
                 .setContentText("Listening for 'help' command...")

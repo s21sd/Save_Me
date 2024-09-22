@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required Permissions -->
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -14,7 +13,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
-    <!-- For capturing audio (optional, if needed) -->
     <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
@@ -31,7 +29,6 @@
         android:theme="@style/Theme.SaveMe"
         tools:targetApi="31">
 
-        <!-- Splash Activity (entry point) -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -48,13 +45,13 @@
         <activity android:name=".MapActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
 
-        <!-- Voice Service for handling audio recording in foreground -->
+        <!-- Voice Service for handling audio Permissions -->
         <service
             android:name=".VoiceService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
-        <!-- SMS Receiver -->
+        <!-- SMS Receiver Permissions -->
         <receiver
             android:name=".MessageReceiver"
             android:exported="true"
