@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 
@@ -69,15 +70,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnStart.setOnClickListener(view -> {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                 getLastKnownLocation();
-
                 startLocationUpdatesEveryThreeMinutes();
             } else {
-                Toast.makeText(MainActivity.this, "Permission denied. Cannot send SMS.", Toast.LENGTH_SHORT).show();
+                requestAllPermissions();
+                Toast.makeText(MainActivity.this, "Requesting Permissions", Toast.LENGTH_SHORT).show();
             }
         });
+
 
     }
 
@@ -184,8 +187,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkLocationSettings() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, INTERVAL)
+                .setMinUpdateIntervalMillis(INTERVAL / 2)
+                .setWaitForAccurateLocation(false)                  // Set to true if accurate location is needed
+                .setMaxUpdateDelayMillis(100)
+                .build();
+
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
         SettingsClient client = LocationServices.getSettingsClient(this);
@@ -210,9 +217,10 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
 
+
                             sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                         } else {
-
+                            Toast.makeText(MainActivity.this, "Turn On Location Permissions", Toast.LENGTH_SHORT).show();
                             requestNewLocation();
                         }
                     });
