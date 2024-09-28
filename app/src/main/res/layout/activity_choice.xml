@@ -4,17 +4,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="#FF3B30"
     android:padding="16dp">
 
     <Button
         android:id="@+id/btn_in_app"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/white"
+        android:background="@drawable/rounded_button"
         android:text="See in App" />
 
     <Button
         android:id="@+id/btn_google_maps"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@android:color/white"
+        android:background="@drawable/rounded_button"
         android:text="Open in Google Maps" />
 </LinearLayout>

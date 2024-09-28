@@ -30,7 +30,6 @@ public class MessageReceiver extends BroadcastReceiver {
                 String message = smsMessage.getMessageBody();
                 Log.e("TAG", "onReceiver: " + message);
 
-                // Extract latitude and longitude from the message
                 double[] latLong = extractLatLong(message);
                 if (latLong != null) {
                     showNotification(context, message, latLong[0], latLong[1]);
@@ -44,29 +43,26 @@ public class MessageReceiver extends BroadcastReceiver {
     private void showNotification(Context context, String message, double latitude, double longitude) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Create notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
 
-        // Intent to open the ChoiceActivity
         Intent choiceIntent = new Intent(context, ChoiceActivity.class);
         choiceIntent.putExtra("latitude", latitude);
         choiceIntent.putExtra("longitude", longitude);
         choiceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingChoiceIntent = PendingIntent.getActivity(context, 0, choiceIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Notification with action to open the ChoiceActivity
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle("Need Help!")
                 .setContentText("Location: " + latitude + ", " + longitude)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
-                .setContentIntent(pendingChoiceIntent) // Tap notification to open ChoiceActivity
-                .addAction(R.drawable.baseline_add_location_alt_24, "See in App", pendingChoiceIntent) // First action
-                .addAction(R.drawable.baseline_add_location_alt_24, "Open in Google Maps", pendingChoiceIntent); // Second action (still links to choice activity)
+                .setContentIntent(pendingChoiceIntent)
+                .addAction(R.drawable.baseline_add_location_alt_24, "See in App", pendingChoiceIntent)
+                .addAction(R.drawable.baseline_add_location_alt_24, "Open in Google Maps", pendingChoiceIntent);
 
         notificationManager.notify(0, builder.build());
     }
