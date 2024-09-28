@@ -2,27 +2,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
-
-    <!-- SMS Permissions -->
-    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" /> <!-- SMS Permissions -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
-    <!-- Location Permissions -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- Location Permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Audio Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Audio Permissions -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-
-    <!-- Optional Permissions -->
-    <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" /> <!-- Optional Permissions -->
+    <uses-permission
+        android:name="android.permission.CAPTURE_AUDIO_HOTWORD"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
+    <uses-permission
+        android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -35,30 +32,40 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SaveMe"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ChoiceActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Other Activities -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SignUpActivity" android:exported="false" />
-        <activity android:name=".MainActivity" android:exported="false" />
-        <activity android:name=".MapActivity" android:exported="false" />
-        <activity android:name=".SettingsActivity" android:exported="false" />
-
-        <!-- Voice Service for handling audio Permissions -->
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </activity> <!-- Other Activities -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" /> <!-- Voice Service for handling audio Permissions -->
         <service
             android:name=".VoiceService"
             android:exported="false"
-            android:foregroundServiceType="microphone" />
-
-        <!-- SMS Receiver Permissions -->
+            android:foregroundServiceType="microphone" /> <!-- SMS Receiver Permissions -->
         <receiver
             android:name=".MessageReceiver"
             android:exported="true"
@@ -67,7 +74,6 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

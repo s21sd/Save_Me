@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -14,6 +17,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int LOCATION_SETTINGS_REQUEST_CODE = 101;
     private static final int SPEECH_REQUEST_CODE = 101;
+    private static final int READ_SMS_PERMISSION_REQUEST_CODE = 201;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Handler handler;
@@ -50,16 +55,18 @@ public class MainActivity extends AppCompatActivity {
     private String latitude = "0.0";
     private String longitude = "0.0";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btnStart = findViewById(R.id.btnStart);
         Button profileIcon = findViewById(R.id.profileIcon);
+        Button readMsgBtn=findViewById(R.id.readMsgButton);
+        TextView msg=findViewById(R.id.msg);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
-
-
         requestAllPermissions();
 
         handleIncomingIntent(getIntent());
@@ -67,6 +74,15 @@ public class MainActivity extends AppCompatActivity {
         profileIcon.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+        });
+
+        readMsgBtn.setOnClickListener(view->{
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                readLatestSms();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS}, READ_SMS_PERMISSION_REQUEST_CODE);
+            }
         });
 
         btnStart.setOnClickListener(view -> {
@@ -85,19 +101,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestAllPermissions() {
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)) {
 
 
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+                Toast.makeText(this, "Permissions are required for full functionality.", Toast.LENGTH_SHORT).show();
+            }
+
+            // Request permissions
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.RECORD_AUDIO
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.RECEIVE_SMS,
+                    // Request notification permission if on Android 13 or above
+                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.POST_NOTIFICATIONS : null)
             }, PERMISSION_REQUEST_CODE);
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -216,11 +242,9 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-
-
                             sendSmsWithLocation(location.getLatitude(), location.getLongitude());
                         } else {
-                            Toast.makeText(MainActivity.this, "Turn On Location Permissions", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Location not available, trying again...", Toast.LENGTH_SHORT).show();
                             requestNewLocation();
                         }
                     });
@@ -280,5 +304,57 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No contacts found.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void readLatestSms() {
+        // Query SMS inbox
+        Uri inboxUri = Uri.parse("content://sms/inbox");
+        String[] projection = new String[]{"address", "body", "date"};
+        String sortOrder = "date DESC";
+
+        try (Cursor cursor = getContentResolver().query(inboxUri, projection, null, null, sortOrder)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                // Retrieve the message details
+                String messageBody = cursor.getString(cursor.getColumnIndexOrThrow("body"));
+
+                // Log the message body for debugging
+                Log.d("FrontActivity", "Message: " + messageBody);
+
+                String lat = null;
+                String log = null;
+
+                if (messageBody.contains("lat:") && messageBody.contains("log:")) {
+                    String[] parts = messageBody.split(", ");
+                    for (String part : parts) {
+                        if (part.startsWith("lat: ")) {
+                            lat = part.substring(5);
+                        } else if (part.startsWith("log: ")) {
+                            log = part.substring(5);
+                        }
+                    }
+
+                    if (lat != null && log != null) {
+                        latitude = lat;
+                        longitude = log;
+                        Toast.makeText(this, "Got the lat log "+latitude, Toast.LENGTH_SHORT).show();
+
+//                        .setText("Latitude: " + latitude + ", Longitude: " + longitude);
+//                        updateMapWithLocation(latitude, longitude);
+                    } else {
+                          Log.d("Not Got",latitude);
+//                        tvLatLong.setText("Latitude or Longitude not found in the message.");
+                    }
+                } else {
+                    Log.d("No Coordinates",latitude);
+//                    tvLatLong.setText("No coordinates found in the latest message.");
+                }
+            } else {
+                Log.e("FrontActivity", "No SMS messages found.");
+//                tvLatLong.setText("No recent message found.");
+            }
+        } catch (Exception e) {
+            Log.e("FrontActivity", "Error reading SMS", e);
+        }
+    }
+
 
 }
