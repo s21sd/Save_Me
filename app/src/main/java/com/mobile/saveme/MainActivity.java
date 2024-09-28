@@ -62,8 +62,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button btnStart = findViewById(R.id.btnStart);
         Button profileIcon = findViewById(R.id.profileIcon);
-        Button readMsgBtn=findViewById(R.id.readMsgButton);
-        TextView msg=findViewById(R.id.msg);
+
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
@@ -76,14 +75,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        readMsgBtn.setOnClickListener(view->{
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
-                    == PackageManager.PERMISSION_GRANTED) {
-                readLatestSms();
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS}, READ_SMS_PERMISSION_REQUEST_CODE);
-            }
-        });
 
         btnStart.setOnClickListener(view -> {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED &&
@@ -112,13 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permissions are required for full functionality.", Toast.LENGTH_SHORT).show();
             }
 
-            // Request permissions
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.RECEIVE_SMS,
-                    // Request notification permission if on Android 13 or above
                     (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.POST_NOTIFICATIONS : null)
             }, PERMISSION_REQUEST_CODE);
         }
@@ -215,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkLocationSettings() {
         LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, INTERVAL)
                 .setMinUpdateIntervalMillis(INTERVAL / 2)
-                .setWaitForAccurateLocation(false)                  // Set to true if accurate location is needed
+                .setWaitForAccurateLocation(false)
                 .setMaxUpdateDelayMillis(100)
                 .build();
 
