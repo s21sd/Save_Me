@@ -5,11 +5,17 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 public class ChoiceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
+
+        LottieAnimationView lottieAnimationView = findViewById(R.id.animation_view);
+//        lottieAnimationView.setAnimation("raw/save.json");
+        lottieAnimationView.playAnimation();
 
         double latitude = getIntent().getDoubleExtra("latitude", 0);
         double longitude = getIntent().getDoubleExtra("longitude", 0);
