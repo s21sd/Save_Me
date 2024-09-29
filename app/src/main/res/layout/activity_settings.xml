@@ -8,61 +8,64 @@
     android:background="#ff0000"
     tools:context=".SettingsActivity">
 
+    <!-- Profile Picture -->
     <ImageView
         android:id="@+id/profilePicture"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/baseline_account_circle_24"
+        android:background="@drawable/profiles"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- User Name -->
-    <TextView
-        android:id="@+id/userName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sunny Srivastava"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/profilePicture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"/>
+<!--    <TextView-->
+<!--        android:id="@+id/userName"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Sunny Srivastava"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/profilePicture"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.5" />-->
 
     <!-- User Email -->
     <TextView
-        android:id="@+id/userGender"
+        android:id="@+id/usermail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="sunnysrivastava258@gmail.com"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@+id/userName"
+        android:text="saveme@gmail.com"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="12dp"
+        android:textSize="16sp"
+       android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/profilePicture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"/>
+        app:layout_constraintHorizontal_bias="0.5" />
 
     <!-- Name Input -->
-
-    <!-- Phone Number Input -->
     <EditText
         android:id="@+id/etName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:textColorHint="@android:color/darker_gray"
         android:background="@drawable/rounded_border_edittext"
         android:hint="Enter Name"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userGender"
+        app:layout_constraintTop_toBottomOf="@+id/usermail"
         app:layout_constraintWidth_percent="0.8" />
 
+    <!-- Phone Number Input -->
     <EditText
         android:id="@+id/etPhoneNumber"
         android:layout_width="0dp"
@@ -74,10 +77,10 @@
         app:layout_constraintTop_toBottomOf="@+id/etName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         android:layout_marginTop="16dp"
-        app:layout_constraintWidth_percent="0.8"/>
+        app:layout_constraintWidth_percent="0.8" />
 
+    <!-- Add Contact Button -->
     <Button
         android:id="@+id/btnAddContact"
         android:layout_width="0dp"
@@ -91,20 +94,54 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etPhoneNumber"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toBottomOf="@id/etPhoneNumber" />
 
+    <!-- Logout Button at Top Right Corner -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textColor="@android:color/white"
         android:background="@drawable/baseline_arrow_back_24"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintHorizontal_bias="0.5"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <!-- Share Buttons -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/share_github"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="32dp"
+            android:drawableLeft="@drawable/new_github" />
+
+        <Button
+            android:id="@+id/share_mail"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="32dp"
+            android:drawableLeft="@drawable/new_mail" />
+
+        <Button
+            android:id="@+id/share_insta"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="32dp"
+            android:drawableLeft="@drawable/new_insta" />
+    </LinearLayout>
 
     <!-- Contacts RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -113,11 +150,10 @@
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@id/btnLogout"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnAddContact"
-        app:layout_constraintVertical_bias="1.0" />
+     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

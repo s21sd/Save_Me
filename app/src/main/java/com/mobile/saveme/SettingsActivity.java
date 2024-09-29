@@ -3,10 +3,13 @@ package com.mobile.saveme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,12 +32,22 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText etName, etPhoneNumber;
     private Button btnAddContact, btnLogout;
     private SharedPreferences sharedPreferences;
+    private TextView usermail;
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        usermail=findViewById(R.id.usermail);
+        SharedPreferences sharedPreferences2 = getSharedPreferences("SaveMePrefs", MODE_PRIVATE);
+        String userEmail = sharedPreferences2.getString("userEmail", null);
+
+        if (userEmail != null) {
+            usermail.setText(userEmail);
+        } else {
+            Log.d("Stored Email", "No email found in SharedPreferences.");
+        }
 
         recyclerViewContacts = findViewById(R.id.recyclerViewContacts);
         etName = findViewById(R.id.etName);
@@ -45,12 +58,33 @@ public class SettingsActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("contacts_prefs", Context.MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         contactList = loadContactsFromPreferences();
-
+        Button opengit,openlinkedin,openmail;
         contactAdapter = new ContactAdapter(contactList, this::deleteContact);
         recyclerViewContacts.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewContacts.setAdapter(contactAdapter);
 
         ensureDefaultContact();
+
+        opengit=findViewById(R.id.share_github);
+        openlinkedin=findViewById(R.id.share_insta);
+        openmail=findViewById(R.id.share_mail);
+
+        opengit.setOnClickListener(view1 -> {
+            String giturl="https://github.com/s21sd/Save_Me";
+            Intent intent=new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(giturl));
+            startActivity(intent);
+        });
+
+        openlinkedin.setOnClickListener(view12 -> {
+            String linkdinaurl="https://www.linkedin.com/in/sunny-srivastava-a82996244";
+            Intent intent=new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(linkdinaurl));
+            startActivity(intent);
+        });
+
+        openmail.setOnClickListener(view13 -> startActivity(new Intent(Intent.ACTION_SENDTO,Uri.parse("mailto:classify359@gmail.com"))));
+
 
         btnAddContact.setOnClickListener(v -> addContact());
         btnLogout.setOnClickListener(v -> logoutUser());
