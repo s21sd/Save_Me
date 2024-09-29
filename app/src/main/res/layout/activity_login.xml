@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 
-    <!-- Email or Phone EditText -->
+
     <EditText
         android:id="@+id/etEmailOrPhone"
         android:layout_width="0dp"
