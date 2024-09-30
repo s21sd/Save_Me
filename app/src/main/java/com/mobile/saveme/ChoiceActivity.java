@@ -16,7 +16,6 @@ public class ChoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choice);
 
         LottieAnimationView lottieAnimationView = findViewById(R.id.animation_view);
-//        lottieAnimationView.setAnimation("raw/save.json");
         lottieAnimationView.playAnimation();
 
         double latitude = getIntent().getDoubleExtra("latitude", 0);
@@ -45,7 +44,6 @@ public class ChoiceActivity extends AppCompatActivity {
         });
 
         sendbtn.setOnClickListener(view->{
-//            Toast.makeText(this, "Working", Toast.LENGTH_SHORT).show();
             String message="We will save you, be safe!";
             if (phoneNumber != null && message != null) {
                 SmsManager smsManager = SmsManager.getDefault();

@@ -1,12 +1,17 @@
 package com.mobile.saveme;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -75,7 +80,6 @@ public class MapActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("latitude") && intent.hasExtra("longitude")) {
-            // Use getDoubleExtra() with a default value
             double latitude = intent.getDoubleExtra("latitude", 0.0);
             double longitude = intent.getDoubleExtra("longitude", 0.0);
             Log.d("MapActivity", "Received Latitude: " + latitude + ", Longitude: " + longitude);
@@ -114,30 +118,36 @@ public class MapActivity extends AppCompatActivity {
         mMyLocationOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
             GeoPoint currentLocation = mMyLocationOverlay.getMyLocation();
             if (currentLocation != null) {
-                drawRoute(currentLocation, manualLocation);
+                if(isNetworkAvailable()){
+
+                    drawRoute(currentLocation, manualLocation);
+                }
+                else{
+                    drawRouteWithoutNet(currentLocation,manualLocation);
+                }
                 controller.setCenter(currentLocation);
             }
         }));
     }
 
-//    private void drawRoute(GeoPoint start, GeoPoint end) {
-//        List<GeoPoint> points = new ArrayList<>();
-//        points.add(start);
-//        points.add(end);
-//
-//        Polyline route = new Polyline();
-//        route.setPoints(points);
-//        route.setColor(Color.RED);
-//        route.setWidth(5.0f);
-//
-//        mMap.getOverlays().add(route);
-//    }
+    private void drawRouteWithoutNet(GeoPoint start, GeoPoint end) {
+        List<GeoPoint> points = new ArrayList<>();
+        points.add(start);
+        points.add(end);
+
+        Polyline route = new Polyline();
+        route.setPoints(points);
+        route.setColor(Color.BLUE);
+        route.setWidth(5.0f);
+
+        mMap.getOverlays().add(route);
+    }
 
     private void drawRoute(GeoPoint start, GeoPoint end) {
-        // OkHttpClient setup
+
         OkHttpClient client = new OkHttpClient();
 
-        // GraphHopper API query
+
         String apiKey = "4dce91b6-74dc-4494-89f2-017f99842e08";
         String url = "https://graphhopper.com/api/1/route?key=" + apiKey;
 
@@ -242,6 +252,20 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            } else {
+                return connectivityManager.getActiveNetworkInfo() != null &&
+                        connectivityManager.getActiveNetworkInfo().isConnected();
+            }
+        }
+        return false;
+    }
     @Override
     protected void onResume() {
         super.onResume();
