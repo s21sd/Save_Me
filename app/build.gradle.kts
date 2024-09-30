@@ -42,6 +42,7 @@ dependencies {
     implementation (libs.gson)
     implementation ("org.osmdroid:osmdroid-android:6.1.11")
     implementation ("com.airbnb.android:lottie:6.5.2")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

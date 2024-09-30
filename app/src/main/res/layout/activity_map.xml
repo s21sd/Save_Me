@@ -6,10 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
+
     <!-- MapView -->
     <org.osmdroid.views.MapView
         android:id="@+id/osmmap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/baseline_arrow_circle_left_24"
+        android:contentDescription="Back" />
+
 
 </RelativeLayout>
