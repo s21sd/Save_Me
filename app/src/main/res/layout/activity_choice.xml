@@ -48,26 +48,38 @@
             android:layout_weight="1"
             android:background="@drawable/rounded_button"
             android:backgroundTint="@android:color/white"
+            android:layout_marginRight="4dp"
             android:text="See in App"
             android:textColor="#FF3B30"
             android:textSize="14sp"
             android:padding="10dp"/>
-
-        <View
-            android:layout_width="16dp"
-            android:layout_height="wrap_content"/>
 
         <Button
             android:id="@+id/btn_google_maps"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginRight="4dp"
             android:backgroundTint="@android:color/white"
             android:background="@drawable/rounded_button"
             android:text="Open in Maps"
             android:textColor="#FF3B30"
             android:textSize="14sp"
             android:padding="5dp"/>
+
+        <Button
+            android:id="@+id/sendmsgbtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/white"
+            android:background="@drawable/rounded_button"
+            android:text="Send Msg"
+            android:textColor="#FF3B30"
+            android:textSize="14sp"
+            android:padding="5dp"/>
+
+
     </LinearLayout>
 
 <!--    <TextView-->

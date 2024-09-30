@@ -1,8 +1,10 @@
 package com.mobile.saveme;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +18,8 @@ import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -54,19 +59,27 @@ public class MainActivity extends AppCompatActivity {
     private static final int INTERVAL = 180000;
     private String latitude = "0.0";
     private String longitude = "0.0";
+    private Animation rotateAnimation;
+    private BroadcastReceiver stopAnimationReceiver;
+ private  Button btnStart;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button btnStart = findViewById(R.id.btnStart);
+       btnStart = findViewById(R.id.btnStart);
         Button profileIcon = findViewById(R.id.profileIcon);
+
+
+        rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_animation);
+
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         handler = new Handler();
         requestAllPermissions();
+        setupBroadcastReceiver();
 
         handleIncomingIntent(getIntent());
 
@@ -79,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(view -> {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
+                btnStart.startAnimation(rotateAnimation);
+                btnStart.setText("Waiting...");
                 getLastKnownLocation();
                 startLocationUpdatesEveryThreeMinutes();
             } else {
@@ -89,6 +103,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void setupBroadcastReceiver() {
+        stopAnimationReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null && "STOP_ANIMATION".equals(intent.getAction())) {
+                    String updateText = intent.getStringExtra("updateText");
+                    btnStart.clearAnimation();
+                    btnStart.setText(updateText != null ? updateText : "Stopped");
+                    Log.d("MainActivity", "Animation stopped, text updated to: " + updateText);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(stopAnimationReceiver,
+                new IntentFilter("STOP_ANIMATION"));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (stopAnimationReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(stopAnimationReceiver);
+        }
     }
 
     private void requestAllPermissions() {
@@ -347,6 +386,8 @@ public class MainActivity extends AppCompatActivity {
             Log.e("FrontActivity", "Error reading SMS", e);
         }
     }
+
+
 
 
 }

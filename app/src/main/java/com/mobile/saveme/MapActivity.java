@@ -72,16 +72,7 @@ public class MapActivity extends AppCompatActivity {
             initializeMap();
         }
 
-//        double randomLatitudeStart = 20.3487742;
-//        double randomLongitudeStart = 85.8161959;
-//
-//        double randomLatitudeEnd = 20.34504;
-//        double randomLongitudeEnd = 85.80346;
-//
-//        GeoPoint startPoint = new GeoPoint(randomLatitudeStart, randomLongitudeStart);
-//        GeoPoint endPoint = new GeoPoint(randomLatitudeEnd, randomLongitudeEnd);
-//
-//        drawRoute(startPoint, endPoint);
+
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("latitude") && intent.hasExtra("longitude")) {
             // Use getDoubleExtra() with a default value
