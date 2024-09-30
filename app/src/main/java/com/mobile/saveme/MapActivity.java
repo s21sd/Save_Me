@@ -151,7 +151,6 @@ public class MapActivity extends AppCompatActivity {
         String apiKey = "4dce91b6-74dc-4494-89f2-017f99842e08";
         String url = "https://graphhopper.com/api/1/route?key=" + apiKey;
 
-        // Request body for the API call
         String jsonBody = "{\n" +
                 "  \"profile\": \"bike\",\n" +
                 "  \"points\": [\n" +
@@ -172,13 +171,11 @@ public class MapActivity extends AppCompatActivity {
 
         RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json"));
 
-        // Request setup
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
 
-        // Make the network call asynchronously
         client.newCall(request).enqueue(new Callback() {
 
             public void onFailure(Call call, IOException e) {
