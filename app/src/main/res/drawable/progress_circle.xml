@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item>
+        <shape android:shape="ring"
+            android:thicknessRatio="11"
+            android:useLevel="false">
+            <solid android:color="#BDBDBD" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+
+    <!-- Background ring -->
+    <item>
+        <shape android:shape="ring"
+            android:thicknessRatio="10"
+            android:useLevel="false">
+            <solid android:color="#EAEAEA" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+
+    <!-- Rotating progress ring -->
+    <item android:id="@+id/progressAnim">
+        <rotate
+            android:fromDegrees="0"
+            android:toDegrees="360"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:duration="2000"
+            android:repeatCount="infinite"
+            android:interpolator="@android:anim/overshoot_interpolator">
+
+            <shape android:shape="ring"
+                android:thicknessRatio="10"
+                android:useLevel="true">
+                <solid android:color="#FF2D00" />
+                <corners android:radius="10dp" />
+            </shape>
+
+        </rotate>
+    </item>
+
+</layer-list>

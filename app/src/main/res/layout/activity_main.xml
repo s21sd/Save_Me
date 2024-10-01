@@ -8,41 +8,6 @@
     android:background="#ff0000"
     tools:context=".MainActivity">
 
-    <!-- Start Button -->
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="100dp"
-        android:background="@drawable/round_button_background"
-        android:text="Start"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tvStart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.4"/>
-
-    <!-- Title Text -->
-    <TextView
-        android:id="@+id/tvStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Start"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStart" />
-
-
-
     <Button
         android:id="@+id/profileIcon"
         android:layout_width="50dp"
@@ -51,20 +16,74 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/baseline_account_circle_24"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0" />
 
+    <FrameLayout
+        android:id="@+id/progressFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.4">
+
+        <View
+            android:id="@+id/progressBar"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:background="@drawable/progress_circle"
+            android:elevation="6dp"
+        android:translationZ="6dp" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@drawable/round_button_background"
+            android:text="SOS"
+            android:textColor="#ff0000"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:elevation="8dp"
+        android:translationZ="8dp" />
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/tvStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Tap to Start"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressFrame" />
+
+    <!-- Microphone Button -->
+
+    <!-- TextView for SOS Description -->
     <Button
         android:id="@+id/saidbtn"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginTop="289dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/baseline_mic_24"
         android:onClick="speak"
         app:layout_constraintBottom_toTopOf="@+id/tvTapToStart"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvStart" />
+        app:layout_constraintTop_toBottomOf="@+id/tvStart"
+        app:layout_constraintVertical_bias="0.671" />
 
     <TextView
         android:id="@+id/tvTapToStart"
