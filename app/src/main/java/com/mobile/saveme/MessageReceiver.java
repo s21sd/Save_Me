@@ -133,7 +133,7 @@ public class MessageReceiver extends BroadcastReceiver {
             notificationManager.createNotificationChannel(channel);
         }
 
-        String messageToSend = "We will save you, be safe!";
+        String messageToSend = "We will save you, be safe! Latitude: " + latitude + ", Longitude: " + longitude;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo)
