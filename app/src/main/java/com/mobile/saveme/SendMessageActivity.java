@@ -51,7 +51,6 @@ public class SendMessageActivity extends AppCompatActivity {
 
         if (senderPhoneNumber != null) {
             phoneNumber = senderPhoneNumber;
-            Log.e("Mynym1", phoneNumber);
         }
         btnBack.setOnClickListener(view -> {
             Intent intent3 = new Intent(SendMessageActivity.this, MapActivity.class);
@@ -64,13 +63,12 @@ public class SendMessageActivity extends AppCompatActivity {
         sendMsgBtn.setOnClickListener(view -> {
             String userMessage = messageUser.getText().toString();
             if (!userMessage.isEmpty()) {
-                // Create a new message and add it using messageStorage
                 Message newMessage = new Message("Me", userMessage, 12, true);
                 messageStorage.addMessage(newMessage);
                 Log.e("Phone",phoneNumber);
-                handleSendSms(this, userMessage); // Send SMS
-                refreshMessages(); // Refresh the RecyclerView
-                messageUser.setText(""); // Clear input field
+                handleSendSms(this, userMessage);
+                refreshMessages();
+                messageUser.setText("");
             }
         });
 
@@ -92,10 +90,9 @@ public class SendMessageActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == SMS_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
+
                 Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show();
             } else {
-                // Permission denied
                 Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }

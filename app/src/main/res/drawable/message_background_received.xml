@@ -1,4 +1,4 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#2196F3"/> <!-- Blue background for received messages -->
+    <solid android:color="#ffffff"/>
     <corners android:radius="16dp" />
 </shape>
