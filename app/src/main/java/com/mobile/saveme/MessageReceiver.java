@@ -1,6 +1,5 @@
 package com.mobile.saveme;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,12 +19,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
-import android.location.Location;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +76,7 @@ public class MessageReceiver extends BroadcastReceiver {
                 if (latLong != null) {
                     showNotification(context, latLong[0], latLong[1], smsMessage.getDisplayOriginatingAddress());
                 } else {
-                    Toast.makeText(context, "No valid coordinates found in the message", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "No valid coordinates found in the message", Toast.LENGTH_SHORT).show();
                 }
             }
 

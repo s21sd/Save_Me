@@ -66,7 +66,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
         backButton=findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MapActivity.this, ChoiceActivity.class);
+            Intent intent = new Intent(MapActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         });
