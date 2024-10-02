@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.widget.Button;
@@ -43,6 +44,7 @@ public class ChoiceActivity extends AppCompatActivity {
         Button btnInApp = findViewById(R.id.btn_in_app);
         Button btnGoogleMaps = findViewById(R.id.btn_google_maps);
         Button sendbtn = findViewById(R.id.sendmsgbtn);
+        Button btnCall = findViewById(R.id.btn_call);
 
         btnInApp.setOnClickListener(v -> {
             Intent mapIntent = new Intent(ChoiceActivity.this, MapActivity.class);
@@ -63,6 +65,27 @@ public class ChoiceActivity extends AppCompatActivity {
         sendbtn.setOnClickListener(view -> {
             getCurrentLocationAndSendSms();
         });
+
+        sendbtn.setOnClickListener(view -> getCurrentLocationAndSendSms());
+
+        // Call button functionality
+        btnCall.setOnClickListener(view -> {
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                makePhoneCall(phoneNumber);
+            } else {
+                Toast.makeText(ChoiceActivity.this, "No phone number provided.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void makePhoneCall(String phoneNumber) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 102);
+            return;
+        }
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(callIntent);
     }
 
     private void getCurrentLocationAndSendSms() {

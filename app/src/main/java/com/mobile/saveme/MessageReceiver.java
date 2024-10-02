@@ -44,15 +44,28 @@ public class MessageReceiver extends BroadcastReceiver {
     }
 
     private void handleReceivedSms(Context context, Intent intent) {
+        MessageStorage messageStorage = new MessageStorage(context);
         for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
-            String message = smsMessage.getMessageBody();
-            Log.e("TAG", "onReceive: " + message);
+            String messageBody = smsMessage.getMessageBody();
+            String sender = smsMessage.getDisplayOriginatingAddress();
 
-            if (message.contains("We will save you, be safe!")) {
+
+            // Save the received message
+
+//            if(!messageBody.contains("We will save you, be safe!") || !messageBody.contains("lat: ")){
+//
+//            }
+
+            Message receivedMessage = new Message(sender, messageBody, System.currentTimeMillis(), false);
+            messageStorage.addMessage(receivedMessage);
+
+            Log.e("TAG", "Received: " + messageBody);
+
+            if (messageBody.contains("We will save you, be safe!")) {
                 Intent broadcastIntent = new Intent("STOP_ANIMATION");
                 broadcastIntent.putExtra("updateText", "Found");
                 Toast.makeText(context, "We found you. Help is on the way.", Toast.LENGTH_SHORT).show();
-                String[] parts = message.split("Latitude: |, Longitude: ");
+                String[] parts = messageBody.split("Latitude: |, Longitude: ");
 
                 String latitudeString = parts[1].trim();
                 String longitudeString = parts[2].trim();
@@ -64,6 +77,9 @@ public class MessageReceiver extends BroadcastReceiver {
                 Intent mapIntent = new Intent(context, MapActivity.class);
                 mapIntent.putExtra("latitude", latitude);
                 mapIntent.putExtra("longitude", longitude);
+
+
+          Log.e("SenderNum",sender);
                 mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 new Handler().postDelayed(() -> {
                     context.startActivity(mapIntent);
@@ -72,13 +88,18 @@ public class MessageReceiver extends BroadcastReceiver {
                 showNotificationToStuckPerson(context,latitude,longitude,smsMessage.getDisplayOriginatingAddress());
             }
             else{
-                double[] latLong = extractLatLong(message);
+                double[] latLong = extractLatLong(messageBody);
                 if (latLong != null) {
                     showNotification(context, latLong[0], latLong[1], smsMessage.getDisplayOriginatingAddress());
                 } else {
 //                    Toast.makeText(context, "No valid coordinates found in the message", Toast.LENGTH_SHORT).show();
                 }
             }
+
+            Intent sendMessageIntent = new Intent(context, SendMessageActivity.class);
+            sendMessageIntent.putExtra("senderPhoneNumber", sender);
+            sendMessageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // This flag is necessary when starting an activity from a BroadcastReceiver
+            context.startActivity(sendMessageIntent);
 
         }
     }
@@ -146,6 +167,8 @@ public class MessageReceiver extends BroadcastReceiver {
         final String phoneNumber = intent.getStringExtra("phoneNumber");
         final String baseMessage = intent.getStringExtra("message");
 
+        MessageStorage messageStorage = new MessageStorage(context);
+
         if (phoneNumber != null && baseMessage != null) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -161,7 +184,11 @@ public class MessageReceiver extends BroadcastReceiver {
 
                     SmsManager smsManager = SmsManager.getDefault();
                     smsManager.sendTextMessage(phoneNumber, null, messageToSend, null, null);
+
+                    Message sentMessage = new Message(phoneNumber, messageToSend, System.currentTimeMillis(), true);
+                    messageStorage.addMessage(sentMessage);
                     Toast.makeText(context, "Message sent to " + phoneNumber, Toast.LENGTH_SHORT).show();
+
                 } else {
                     Toast.makeText(context, "Unable to get location.", Toast.LENGTH_SHORT).show();
                 }

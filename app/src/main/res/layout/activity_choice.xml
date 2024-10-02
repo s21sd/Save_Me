@@ -67,29 +67,44 @@
             android:textSize="14sp"
             android:padding="5dp"/>
 
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp">
+
+        <Button
+            android:id="@+id/btn_call"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:padding="7dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/rounded_icon_button"
+            android:backgroundTint="@android:color/white"
+            android:drawableStart="@drawable/baseline_call_24"
+            android:drawableTint="#FF3B30"
+            android:gravity="center" />
+
         <Button
             android:id="@+id/sendmsgbtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:padding="7dp"
+            android:gravity="center"
+            android:background="@drawable/rounded_icon_button"
             android:backgroundTint="@android:color/white"
-            android:background="@drawable/rounded_button"
-            android:text="Send Msg"
-            android:textColor="#FF3B30"
-            android:textSize="14sp"
-            android:padding="5dp"/>
+            android:drawableStart="@drawable/baseline_assignment_24"
+            android:drawableTint="#FF3B30" />
 
 
     </LinearLayout>
-
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="We will Find you ! Hold on"-->
-<!--        android:textColor="@color/white"-->
-<!--        android:textSize="24sp"-->
-<!--        android:layout_marginBottom="20dp"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:paddingBottom="20dp" />-->
 
 </LinearLayout>

@@ -23,4 +23,19 @@
         android:contentDescription="Back" />
 
 
+    <Button
+        android:id="@+id/sendmsgbtn"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:padding="7dp"
+        android:gravity="center"
+        android:background="@drawable/rounded_icon_button"
+        android:backgroundTint="@android:color/white"
+        android:drawableStart="@drawable/baseline_assignment_24"
+        android:drawableTint="#FF3B30" />
+
+
 </RelativeLayout>

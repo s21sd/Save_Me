@@ -47,7 +47,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mMap;
     private IMapController controller;
     private MyLocationNewOverlay mMyLocationOverlay;
-    Button backButton;
+    Button backButton ,sendmsgbtn;
 
 
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -65,8 +65,15 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         backButton=findViewById(R.id.backButton);
+        sendmsgbtn=findViewById(R.id.sendmsgbtn);
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(MapActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        sendmsgbtn.setOnClickListener(view -> {
+            Intent intent=new Intent(MapActivity.this,SendMessageActivity.class);
             startActivity(intent);
             finish();
         });
