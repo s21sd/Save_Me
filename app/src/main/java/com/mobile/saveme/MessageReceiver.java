@@ -50,11 +50,6 @@ public class MessageReceiver extends BroadcastReceiver {
             String sender = smsMessage.getDisplayOriginatingAddress();
 
 
-            // Save the received message
-
-//            if(!messageBody.contains("We will save you, be safe!") || !messageBody.contains("lat: ")){
-//
-//            }
 
             Message receivedMessage = new Message(sender, messageBody, System.currentTimeMillis(), false);
             messageStorage.addMessage(receivedMessage);
@@ -98,8 +93,8 @@ public class MessageReceiver extends BroadcastReceiver {
 
             Intent sendMessageIntent = new Intent(context, SendMessageActivity.class);
             sendMessageIntent.putExtra("senderPhoneNumber", sender);
-            sendMessageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // This flag is necessary when starting an activity from a BroadcastReceiver
-            context.startActivity(sendMessageIntent);
+            sendMessageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(sendMessageIntent);
 
         }
     }

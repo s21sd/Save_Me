@@ -43,7 +43,7 @@ public class Message {
         isSent = sent;
     }
 
-    // Method to get formatted timestamp
+
     public String getFormattedTimestamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         return sdf.format(new Date(timestamp));
