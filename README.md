@@ -6,6 +6,9 @@
 
 **SaveMe** is a powerful and intuitive mobile application designed for individuals who find themselves in distressing situations, such as natural disasters, personal emergencies, or safety concerns like women’s security. This app enables users to send their real-time location to pre-registered emergency contacts via SMS, even without an internet connection, ensuring help can reach them quickly.
 
+
+<img src="[https://github.com/s21sd/Save_Me/blob/master/WhatsApp%20Image%202024-10-02%20at%2013.44.28_82c7abae.jpg](https://github.com/s21sd/Save_Me/blob/master/WhatsApp%20Image%202024-10-02%20at%2013.44.28_82c7abae.jpg)" width="500" height="1000" alt="Image Description">
+
 **Key Features**:
 1. **No Internet Required**: SaveMe works seamlessly in situations where there is no internet access, using SMS technology to communicate critical information.
    
